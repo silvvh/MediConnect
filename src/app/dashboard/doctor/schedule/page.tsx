@@ -80,7 +80,7 @@ export default function DoctorSchedulePage() {
         return;
       }
 
-      setAppointments(appts || []);
+      setAppointments((appts || []) as any);
     } catch (error) {
       console.error("Error:", error);
     } finally {
