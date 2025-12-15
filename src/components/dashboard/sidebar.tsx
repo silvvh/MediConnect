@@ -92,7 +92,7 @@ export function Sidebar() {
           // Fallback para email do auth
           setProfile({
             full_name: user.email?.split("@")[0] || "Usuário",
-            email: user.email,
+            email: user.email || null,
             role: null,
           });
         }

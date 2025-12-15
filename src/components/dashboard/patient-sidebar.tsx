@@ -86,7 +86,7 @@ export function PatientSidebar({ isOpen = true, onClose }: PatientSidebarProps) 
         } else {
           setProfile({
             full_name: user.email?.split("@")[0] || "Usuário",
-            email: user.email,
+            email: user.email || null,
           });
         }
       }
