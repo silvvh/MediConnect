@@ -30,7 +30,6 @@ export async function DELETE(
     }
 
     const { error: deleteError } = await supabase
-    const { error: deleteError } = await supabase
       .from('payment_methods')
       .delete()
       .eq('id', methodId)
