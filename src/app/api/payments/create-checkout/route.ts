@@ -37,12 +37,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Appointment not found' }, { status: 404 })
     }
 
-    const price = appointment.doctor.consultation_price || 15000 // R$ 150.00 default (em centavos)
+    // doctor é um array mesmo em relação 1:1, acessar primeiro elemento
+    const doctor = Array.isArray(appointment.doctor) ? appointment.doctor[0] : appointment.doctor;
+    const price = doctor?.consultation_price || 15000 // R$ 150.00 default (em centavos)
     
     // profiles é um array mesmo em relação 1:1, acessar primeiro elemento
-    const doctorProfile = Array.isArray(appointment.doctor.profiles) 
-      ? appointment.doctor.profiles[0] 
-      : appointment.doctor.profiles;
+    const doctorProfile = Array.isArray(doctor?.profiles) 
+      ? doctor.profiles[0] 
+      : doctor?.profiles;
 
     // Criar Checkout Session
     const session = await stripe.checkout.sessions.create({
