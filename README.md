@@ -9,7 +9,7 @@
 
 **Plataforma completa de telemedicina moderna e segura para o mercado brasileiro**
 
-[Funcionalidades](#-funcionalidades) • [Instalação](#-instalação) • [Arquitetura](#-arquitetura) • [Documentação](#-documentação)
+[Funcionalidades](#-funcionalidades) • [Instalação](#-instalação) • [Arquitetura](#-arquitetura) 
 
 </div>
 
@@ -442,60 +442,3 @@ telemed/
 - ✅ **Logs de Auditoria**: Todas as ações são registradas (LGPD)
 - ✅ **Proteção de Rotas**: Middleware verifica autenticação
 - ✅ **Validação de Roles**: Verificação de permissões por role
-
-### Conformidade LGPD
-
-- Logs de auditoria completos
-- Políticas de privacidade
-- Controle de acesso granular
-- Exclusão de dados conforme solicitação
-
----
-
-## 🚀 Deploy
-
-### Vercel (Recomendado)
-
-1. Conecte seu repositório ao Vercel
-2. Configure as variáveis de ambiente
-3. Configure o cron job para lembretes (opcional)
-4. Deploy automático a cada push
-
-### Outras Plataformas
-
-O projeto pode ser deployado em qualquer plataforma que suporte Next.js:
-- Netlify
-- AWS Amplify
-- Railway
-- Render
-
----
-
-## 📚 Documentação Adicional
-
-- [SETUP.md](./SETUP.md) - Guia de configuração detalhado
-- [PROJETO_STATUS.md](./PROJETO_STATUS.md) - Status do projeto
-- [IMPLEMENTACOES_CONCLUIDAS.md](./IMPLEMENTACOES_CONCLUIDAS.md) - Funcionalidades implementadas
-- [VARIAVEIS_AMBIENTE_COMPLETO.md](./VARIAVEIS_AMBIENTE_COMPLETO.md) - Lista completa de variáveis
-
----
-
-## 🤝 Contribuindo
-
-Este é um projeto interno. Para sugestões e melhorias, entre em contato com a equipe de desenvolvimento.
-
----
-
-## 📝 Licença
-
-Este projeto é privado e proprietário.
-
----
-
-<div align="center">
-
-**Desenvolvido com ❤️ para revolucionar a telemedicina no Brasil**
-
-[⬆ Voltar ao topo](#-mediconnect---plataforma-de-telemedicina)
-
-</div>
