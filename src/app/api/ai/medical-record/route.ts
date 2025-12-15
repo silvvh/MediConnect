@@ -143,14 +143,14 @@ IMPORTANTE: Sua resposta deve ser APENAS um objeto JSON válido, sem markdown, s
 
     // profiles é um array mesmo em relação 1:1, acessar primeiro elemento
     const profiles = patient.profiles || [];
-    const profile = Array.isArray(profiles) ? profiles[0] : profiles;
+    const patientProfile = Array.isArray(profiles) ? profiles[0] : profiles;
     const patientAge = patient.birth_date
       ? calculateAge(new Date(patient.birth_date))
       : "Não informada";
 
     const userPrompt = `Gere um prontuário médico baseado nas seguintes informações:
 
-PACIENTE: ${profile?.full_name || 'Não informado'}
+PACIENTE: ${patientProfile?.full_name || 'Não informado'}
 IDADE: ${patientAge}
 
 QUEIXA PRINCIPAL: ${chiefComplaint || "Não informado"}
