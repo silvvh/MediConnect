@@ -1,6 +1,6 @@
 'use client';
 
-import { useParticipantIds, useVideoTrack, useAudioTrack } from '@daily-co/daily-react';
+import { useParticipantIds, useVideoTrack, useAudioTrack, useParticipant } from '@daily-co/daily-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Mic, MicOff, Video, VideoOff } from 'lucide-react';
@@ -25,6 +25,7 @@ function ParticipantTile({ participantId }: { participantId: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoState = useVideoTrack(participantId);
   const audioState = useAudioTrack(participantId);
+  const participant = useParticipant(participantId);
 
   useEffect(() => {
     if (videoRef.current && videoState.track) {
@@ -32,7 +33,6 @@ function ParticipantTile({ participantId }: { participantId: string }) {
     }
   }, [videoState.track]);
 
-  const participant = videoState.persistentTrack?.participant;
   const isLocal = videoState.isLocal;
   const isCameraOn = videoState.isOff === false;
   const isMicOn = audioState.isOff === false;
@@ -51,9 +51,9 @@ function ParticipantTile({ participantId }: { participantId: string }) {
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
           <Avatar className="w-32 h-32 border-4 border-gray-700">
-            <AvatarImage src={participant?.user_name} />
+            <AvatarImage src={participant?.user_name || undefined} />
             <AvatarFallback className="bg-primary-500 text-white text-4xl">
-              {participant?.user_name?.charAt(0) || '?'}
+              {participant?.user_name?.charAt(0) || participant?.session_id?.charAt(0) || '?'}
             </AvatarFallback>
           </Avatar>
         </div>
