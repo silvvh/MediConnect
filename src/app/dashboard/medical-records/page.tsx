@@ -89,7 +89,7 @@ export default function MedicalRecordsPage() {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      setRecords(data || [])
+      setRecords((data || []) as any)
     } catch (error: any) {
       console.error('Erro ao carregar prontuários:', error)
     } finally {
