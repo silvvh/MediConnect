@@ -44,8 +44,9 @@ export async function sendAppointmentNotification({
     }
 
     // profiles é um array mesmo em relação 1:1, acessar primeiro elemento
-    const patientProfilesArray = (appointment.patient as any).profiles || []
-    const doctorProfilesArray = (appointment.doctor as any).profiles || []
+    const appointmentAny = appointment as any
+    const patientProfilesArray = appointmentAny.patient?.profiles || []
+    const doctorProfilesArray = appointmentAny.doctor?.profiles || []
     
     const patientProfiles = Array.isArray(patientProfilesArray) 
       ? patientProfilesArray[0] 
@@ -76,7 +77,7 @@ export async function sendAppointmentNotification({
           <p>Olá ${patientProfiles?.full_name || 'Paciente'},</p>
           <p>Sua consulta com Dr(a). ${doctorProfiles?.full_name || 'Médico'} foi confirmada.</p>
           <p><strong>Data e Hora:</strong> ${formattedDate}</p>
-          <p><strong>Especialidade:</strong> ${appointment.doctor.specialty}</p>
+          <p><strong>Especialidade:</strong> ${appointmentAny.doctor?.specialty || 'Não informada'}</p>
           <p>Você receberá um lembrete 24 horas antes da consulta.</p>
         `
         break
