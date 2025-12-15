@@ -33,15 +33,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ articles })
   } catch (error: any) {
-    console.error('Error fetching knowledge base:', error)
     return NextResponse.json(
       { error: error.message || 'Erro ao buscar artigos' },
       { status: 500 }
     )
   }
 }
-
-// POST - Criar artigo (apenas admin)
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
@@ -90,7 +87,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ article }, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating article:', error)
     return NextResponse.json(
       { error: error.message || 'Erro ao criar artigo' },
       { status: 500 }

@@ -199,7 +199,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ report })
   } catch (error: any) {
-    console.error('Error generating report:', error)
     return NextResponse.json(
       { error: error.message || 'Erro ao gerar relatório' },
       { status: 500 }

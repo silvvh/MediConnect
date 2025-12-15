@@ -65,7 +65,6 @@ export async function PATCH(
 
     return NextResponse.json({ review: updatedReview })
   } catch (error: any) {
-    console.error('Error updating review:', error)
     return NextResponse.json(
       { error: error.message || 'Erro ao atualizar avaliação' },
       { status: 500 }
@@ -118,7 +117,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Error deleting review:', error)
     return NextResponse.json(
       { error: error.message || 'Erro ao deletar avaliação' },
       { status: 500 }
