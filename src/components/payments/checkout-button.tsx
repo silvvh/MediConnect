@@ -1,11 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { loadStripe } from '@stripe/stripe-js'
 import { Button } from '@/components/ui/button'
 import { CreditCard } from 'lucide-react'
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 interface CheckoutButtonProps {
   appointmentId: string
@@ -33,16 +30,10 @@ export function CheckoutButton({ appointmentId, amount }: CheckoutButtonProps) {
       }
 
       // Redirecionar para Stripe Checkout
-      const stripe = await stripePromise
-      if (!stripe) {
-        throw new Error('Stripe não inicializado')
-      }
-      const { error } = await stripe.redirectToCheckout({
-        sessionId: data.sessionId
-      })
-
-      if (error) {
-        throw error
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        throw new Error('URL de checkout não disponível')
       }
     } catch (error) {
       console.error('Checkout error:', error)
