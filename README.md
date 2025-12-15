@@ -360,7 +360,7 @@ GET /api/cron/send-reminders
 Authorization: Bearer {CRON_SECRET}
 ```
 
-**Recomendado**: Executar a cada hora
+**Configurado**: Executa 2 vezes por dia (9:00 e 18:00 - horário do servidor)
 
 ---
 
