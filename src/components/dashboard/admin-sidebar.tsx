@@ -18,6 +18,8 @@ import {
   ChevronLeft,
   ShoppingBag,
   X,
+  BookOpen,
+  Shield,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
