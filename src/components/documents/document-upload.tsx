@@ -71,6 +71,28 @@ export function DocumentUpload({
 
           if (uploadError) throw uploadError
 
+          // Gerar resumo com IA se for texto (PDF requer biblioteca especial)
+          let aiSummary = null;
+          if (file.type.startsWith('text/') || file.name.endsWith('.txt')) {
+            try {
+              const text = await file.text();
+              if (text && text.length > 100) {
+                const summaryResponse = await fetch('/api/ai/document-summary', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ documentText: text.substring(0, 10000) }),
+                });
+                if (summaryResponse.ok) {
+                  const summaryData = await summaryResponse.json();
+                  aiSummary = JSON.stringify(summaryData.summary);
+                }
+              }
+            } catch (summaryError) {
+              console.error('Erro ao gerar resumo:', summaryError);
+              // Não falhar o upload se o resumo falhar
+            }
+          }
+
           // Registrar no banco de dados
           const { error: dbError } = await supabase
             .from('medical_documents')
@@ -81,7 +103,8 @@ export function DocumentUpload({
               file_size: file.size,
               file_type: file.type,
               storage_path: filePath,
-              category
+              category,
+              ai_summary: aiSummary
             })
 
           if (dbError) throw dbError

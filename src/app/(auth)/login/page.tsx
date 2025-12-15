@@ -42,7 +42,27 @@ export default function LoginPage() {
       if (signInError) throw signInError;
 
       if (data.user) {
-        router.push("/dashboard");
+        // Buscar role do usuário para redirecionar corretamente
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", data.user.id)
+          .single();
+
+        const userRole = profile?.role;
+        
+        // Redirecionar baseado no role
+        if (userRole === "doctor") {
+          router.push("/dashboard/doctor");
+        } else if (userRole === "patient") {
+          router.push("/dashboard/patient");
+        } else if (userRole === "admin") {
+          router.push("/dashboard/admin");
+        } else if (userRole === "attendant") {
+          router.push("/dashboard/attendant");
+        } else {
+          router.push("/dashboard");
+        }
         router.refresh();
       }
     } catch (err: any) {

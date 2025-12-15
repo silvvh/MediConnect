@@ -79,6 +79,28 @@ export async function createAppointment(data: {
 }) {
   const supabase = createClient();
 
+  // Verificar autenticação
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("Usuário não autenticado");
+  }
+
+  // Verificar role - apenas pacientes podem criar agendamentos
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "patient") {
+    throw new Error("Apenas pacientes podem agendar consultas");
+  }
+
+  // Garantir que o patientId é o ID do usuário logado
+  if (data.patientId !== user.id) {
+    throw new Error("Você só pode agendar consultas para si mesmo");
+  }
+
   const { data: appointment, error } = await supabase
     .from("appointments")
     .insert({

@@ -69,7 +69,10 @@ export function ConsultationTable({
 }: ConsultationTableProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <Table>
+      {/* Scroll horizontal para mobile */}
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="inline-block min-w-full align-middle px-4 sm:px-0">
+          <Table>
         <TableHeader>
           <TableRow className="bg-gray-50">
             <TableHead className="cursor-pointer hover:bg-gray-100">
@@ -206,6 +209,8 @@ export function ConsultationTable({
           })}
         </TableBody>
       </Table>
+        </div>
+      </div>
     </div>
   );
 }

@@ -32,10 +32,31 @@ export async function POST(request: Request) {
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session
-      const { appointmentId, userId } = session.metadata || {}
+      const { appointmentId, userId, orderId, orderNumber, type } = session.metadata || {}
 
-      if (appointmentId) {
-        // Atualizar status do pagamento
+      if (type === 'products' && orderId) {
+        // Atualizar status do pedido de produtos
+        if (session.payment_status === 'paid') {
+          await supabase
+            .from('orders')
+            .update({ 
+              status: 'paid',
+              payment_id: session.id,
+            })
+            .eq('id', orderId)
+
+          // Limpar carrinho
+          if (userId) {
+            await supabase
+              .from('cart_items')
+              .delete()
+              .eq('user_id', userId)
+          }
+
+          console.log('Product payment successful:', session.id, 'Order:', orderId)
+        }
+      } else if (appointmentId) {
+        // Atualizar status do pagamento de consulta
         await supabase
           .from('orders')
           .update({ status: 'paid' })
@@ -51,7 +72,7 @@ export async function POST(request: Request) {
             .eq('id', appointmentId)
         }
 
-        console.log('Payment successful:', session.id)
+        console.log('Appointment payment successful:', session.id)
       }
       break
     }

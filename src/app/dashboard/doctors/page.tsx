@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,8 +42,66 @@ export default function DoctorsPage() {
   const [specialtyFilter, setSpecialtyFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isPatient, setIsPatient] = useState(false);
+  const [checkingRole, setCheckingRole] = useState(true);
+  const router = useRouter();
 
   const supabase = createClient();
+
+  // Verificar role ao carregar
+  useEffect(() => {
+    async function checkRole() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+
+        if (profile?.role !== "patient") {
+          // Redirecionar médicos e outros roles
+          if (profile?.role === "doctor") {
+            router.push("/dashboard/doctor");
+          } else {
+            router.push("/dashboard");
+          }
+          return;
+        }
+
+        setIsPatient(true);
+      } catch (error) {
+        console.error("Erro ao verificar role:", error);
+        router.push("/dashboard");
+      } finally {
+        setCheckingRole(false);
+      }
+    }
+
+    checkRole();
+  }, [supabase, router]);
+
+  // Mostrar loading enquanto verifica role
+  if (checkingRole) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Se não for paciente, não renderizar (já redirecionou)
+  if (!isPatient) {
+    return null;
+  }
 
   // Fetch doctors
   useEffect(() => {

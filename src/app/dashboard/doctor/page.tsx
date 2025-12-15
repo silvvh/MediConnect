@@ -67,7 +67,12 @@ export default function DoctorDashboardPage() {
       const monthEnd = endOfMonth(today);
 
       // Buscar consultas de hoje
-      const { data: todayAppts } = await supabase
+      const todayStart = new Date(today);
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date(today);
+      todayEnd.setHours(23, 59, 59, 999);
+
+      const { data: todayAppts, error: todayError } = await supabase
         .from("appointments")
         .select(
           `
@@ -84,14 +89,13 @@ export default function DoctorDashboardPage() {
         `
         )
         .eq("doctor_id", user.id)
-        .gte("scheduled_at", today.toISOString().split("T")[0])
-        .lt(
-          "scheduled_at",
-          new Date(today.getTime() + 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split("T")[0]
-        )
+        .gte("scheduled_at", todayStart.toISOString())
+        .lte("scheduled_at", todayEnd.toISOString())
         .order("scheduled_at");
+
+      if (todayError) {
+        console.error("Error fetching today appointments:", todayError);
+      }
 
       setTodayAppointments(todayAppts || []);
 
@@ -158,11 +162,11 @@ export default function DoctorDashboardPage() {
 
   if (loading) {
     return (
-      <div className="p-8 space-y-8">
-        <Skeleton className="h-12 w-64" />
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 lg:space-y-8">
+        <Skeleton className="h-8 sm:h-10 lg:h-12 w-48 sm:w-64" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-32" />
+            <Skeleton key={i} className="h-28 sm:h-32" />
           ))}
         </div>
       </div>
@@ -170,30 +174,30 @@ export default function DoctorDashboardPage() {
   }
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 lg:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">Dashboard Médico</h1>
-        <p className="text-gray-500">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Dashboard Médico</h1>
+        <p className="text-sm sm:text-base text-gray-500">
           {format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Consultas Hoje */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-blue-600" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
               </div>
-              <Badge variant="secondary" className="bg-blue-50 text-blue-700">
+              <Badge variant="secondary" className="bg-blue-50 text-blue-700 text-xs sm:text-sm">
                 Hoje
               </Badge>
             </div>
-            <p className="text-sm text-gray-500 mb-1">Consultas de Hoje</p>
-            <p className="text-3xl font-bold">
+            <p className="text-xs sm:text-sm text-gray-500 mb-1">Consultas de Hoje</p>
+            <p className="text-2xl sm:text-3xl font-bold">
               {stats?.todayAppointments || 0}
             </p>
           </CardContent>
@@ -413,7 +417,7 @@ export default function DoctorDashboardPage() {
               >
                 <Link href="/dashboard/doctor/schedule">
                   <Calendar className="w-4 h-4 mr-2" />
-                  Ver Agenda Completa
+                  Minha Agenda
                 </Link>
               </Button>
               <Button
@@ -421,9 +425,9 @@ export default function DoctorDashboardPage() {
                 className="w-full justify-start"
                 asChild
               >
-                <Link href="/dashboard/documents">
+                <Link href="/dashboard/doctor/medical-records">
                   <FileText className="w-4 h-4 mr-2" />
-                  Meus Documentos
+                  Prontuários
                 </Link>
               </Button>
               <Button

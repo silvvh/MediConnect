@@ -69,7 +69,7 @@ export default function WaitingRoomPage() {
       setCreatingRoom(true)
 
       // Criar sala de vídeo
-      const response = await fetch('/api/video/create-room', {
+      const response = await fetch('/api/video/room', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ appointmentId })

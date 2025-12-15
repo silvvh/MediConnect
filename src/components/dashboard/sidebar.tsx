@@ -12,20 +12,59 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
+  Stethoscope,
+  Pill,
+  ClipboardList,
+  History,
+  Clock,
+  Sparkles,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import type { UserRole } from "@/types";
 
 interface UserProfile {
   full_name: string | null;
   email: string | null;
+  role: UserRole | null;
 }
 
-const navigation = [
+// Menu para pacientes
+const patientNavigation = [
   { name: "Início", href: "/dashboard/patient", icon: LayoutDashboard },
-  { name: "Consultas", href: "/dashboard/consultations", icon: Calendar },
+  { name: "Agendar Consulta", href: "/dashboard/schedule", icon: Calendar },
+  { name: "Minhas Consultas", href: "/dashboard/consultations", icon: Clock },
+  { name: "Histórico Médico", href: "/dashboard/medical-history", icon: History },
   { name: "Documentos", href: "/dashboard/documents", icon: FileText },
   { name: "Médicos", href: "/dashboard/doctors", icon: Users },
+  { name: "Configurações", href: "/dashboard/settings", icon: Settings },
+];
+
+// Menu para médicos
+const doctorNavigation = [
+  { name: "Início", href: "/dashboard/doctor", icon: LayoutDashboard },
+  { name: "Agenda", href: "/dashboard/schedule", icon: Calendar },
+  { name: "Consultas de Hoje", href: "/dashboard/consultations", icon: Clock },
+  { name: "Prontuários", href: "/dashboard/medical-records", icon: FileText },
+  { name: "Receitas", href: "/dashboard/prescriptions", icon: Pill },
+  { name: "Laudos", href: "/dashboard/medical-reports", icon: ClipboardList },
+  { name: "Configurações", href: "/dashboard/settings", icon: Settings },
+];
+
+// Menu para admin
+const adminNavigation = [
+  { name: "Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
+  { name: "Usuários", href: "/dashboard/admin/users", icon: Users },
+  { name: "Médicos", href: "/dashboard/admin/doctors", icon: Stethoscope },
+  { name: "Relatórios", href: "/dashboard/admin/reports", icon: FileText },
+  { name: "Configurações", href: "/dashboard/settings", icon: Settings },
+];
+
+// Menu para atendentes
+const attendantNavigation = [
+  { name: "Dashboard", href: "/dashboard/attendant", icon: LayoutDashboard },
+  { name: "Tickets", href: "/dashboard/attendant/tickets", icon: FileText },
+  { name: "Chat", href: "/dashboard/attendant/chat", icon: Users },
   { name: "Configurações", href: "/dashboard/settings", icon: Settings },
 ];
 
@@ -44,7 +83,7 @@ export function Sidebar() {
       if (user) {
         const { data } = await supabase
           .from("profiles")
-          .select("full_name, email")
+          .select("full_name, email, role")
           .eq("id", user.id)
           .single();
         if (data) {
@@ -54,12 +93,31 @@ export function Sidebar() {
           setProfile({
             full_name: user.email?.split("@")[0] || "Usuário",
             email: user.email,
+            role: null,
           });
         }
       }
     };
     loadProfile();
   }, []);
+
+  // Selecionar menu baseado no role
+  const getNavigation = () => {
+    switch (profile?.role) {
+      case "patient":
+        return patientNavigation;
+      case "doctor":
+        return doctorNavigation;
+      case "admin":
+        return adminNavigation;
+      case "attendant":
+        return attendantNavigation;
+      default:
+        return patientNavigation; // Default para paciente
+    }
+  };
+
+  const navigation = getNavigation();
 
   const handleSignOut = async () => {
     const supabase = createClient();

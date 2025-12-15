@@ -45,6 +45,60 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
+
+    // Buscar role do usuário
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    const userRole = profile?.role;
+
+    // Redirecionar /dashboard para dashboard específico do role
+    if (request.nextUrl.pathname === "/dashboard") {
+      if (userRole === "doctor") {
+        return NextResponse.redirect(new URL("/dashboard/doctor", request.url));
+      } else if (userRole === "patient") {
+        return NextResponse.redirect(new URL("/dashboard/patient", request.url));
+      } else if (userRole === "admin") {
+        return NextResponse.redirect(new URL("/dashboard/admin", request.url));
+      } else if (userRole === "attendant") {
+        return NextResponse.redirect(new URL("/dashboard/attendant", request.url));
+      }
+    }
+
+    // Proteger rotas específicas por role
+    if (request.nextUrl.pathname.startsWith("/dashboard/patient")) {
+      if (userRole !== "patient") {
+        // Redirecionar para dashboard correto
+        if (userRole === "doctor") {
+          return NextResponse.redirect(new URL("/dashboard/doctor", request.url));
+        }
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
+
+    if (request.nextUrl.pathname.startsWith("/dashboard/doctor")) {
+      if (userRole !== "doctor") {
+        if (userRole === "patient") {
+          return NextResponse.redirect(new URL("/dashboard/patient", request.url));
+        }
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
+
+    if (request.nextUrl.pathname.startsWith("/dashboard/admin")) {
+      if (userRole !== "admin") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
+
+    if (request.nextUrl.pathname.startsWith("/dashboard/attendant")) {
+      if (userRole !== "attendant") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
   }
 
   // Redirecionar usuários autenticados que tentam acessar páginas de auth
@@ -53,6 +107,19 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/register")
   ) {
     if (user) {
+      // Buscar role para redirecionar corretamente
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      const userRole = profile?.role;
+      if (userRole === "doctor") {
+        return NextResponse.redirect(new URL("/dashboard/doctor", request.url));
+      } else if (userRole === "patient") {
+        return NextResponse.redirect(new URL("/dashboard/patient", request.url));
+      }
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -34,6 +34,46 @@ export default function SchedulePage() {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
+  const [isPatient, setIsPatient] = useState(false);
+  const [checkingRole, setCheckingRole] = useState(true);
+
+  // Verificar role ao carregar
+  useEffect(() => {
+    async function checkRole() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+
+        if (profile?.role !== "patient") {
+          // Redirecionar médicos para sua agenda
+          if (profile?.role === "doctor") {
+            router.push("/dashboard/doctor");
+          } else {
+            router.push("/dashboard");
+          }
+          return;
+        }
+
+        setIsPatient(true);
+      } catch (error) {
+        console.error("Erro ao verificar role:", error);
+        router.push("/dashboard");
+      } finally {
+        setCheckingRole(false);
+      }
+    }
+
+    checkRole();
+  }, [supabase, router]);
 
   const steps = [
     { key: "specialty", label: "Especialidade", icon: Stethoscope },
@@ -44,6 +84,23 @@ export default function SchedulePage() {
 
   const currentStepIndex = steps.findIndex((s) => s.key === currentStep);
   const progress = ((currentStepIndex + 1) / steps.length) * 100;
+
+  // Mostrar loading enquanto verifica role
+  if (checkingRole) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Se não for paciente, não renderizar (já redirecionou)
+  if (!isPatient) {
+    return null;
+  }
 
   const handleConfirm = async () => {
     if (!selectedDoctor || !selectedDate || !selectedTimeSlot) return;
@@ -94,8 +151,8 @@ export default function SchedulePage() {
         durationMinutes: 60,
       });
 
-      // Redirecionar para página de consultas
-      router.push("/dashboard/consultations");
+      // Redirecionar para página de consultas do paciente
+      router.push("/dashboard/patient/consultations");
     } catch (error) {
       console.error("Error creating appointment:", error);
       alert("Erro ao agendar consulta. Tente novamente.");

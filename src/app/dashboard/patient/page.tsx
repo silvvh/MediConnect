@@ -93,13 +93,13 @@ export default async function PatientDashboardPage() {
     : "Nenhuma";
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-8">
       {/* Welcome Section */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
           Olá, {profile?.full_name || "Usuário"}! 👋
         </h1>
-        <p className="text-gray-500">
+        <p className="text-sm sm:text-base text-gray-500">
           Bem-vindo de volta. Aqui está um resumo da sua saúde.
         </p>
       </div>
@@ -108,14 +108,12 @@ export default async function PatientDashboardPage() {
       <QuickActions />
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard
           icon={<Calendar className="w-5 h-5" />}
           label="Próxima Consulta"
           value={
-            nextAppointmentDate
-              ? nextAppointmentTime || "Hoje"
-              : "Nenhuma"
+            nextAppointmentDate ? nextAppointmentTime || "Hoje" : "Nenhuma"
           }
           trend={nextAppointmentDateFormatted}
           color="blue"
@@ -151,7 +149,7 @@ export default async function PatientDashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Próximas Consultas</h2>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard/consultations">
+                <Link href="/dashboard/patient/consultations">
                   Ver todas
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
@@ -198,7 +196,7 @@ export default async function PatientDashboardPage() {
                   title="Nenhuma consulta agendada"
                   description="Agende sua primeira consulta com um de nossos especialistas."
                   actionLabel="Agendar Consulta"
-                  actionHref="/dashboard/schedule"
+                  actionHref="/dashboard/patient/schedule"
                 />
               </div>
             )}
@@ -209,7 +207,7 @@ export default async function PatientDashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Documentos Recentes</h2>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard/documents">Ver todos</Link>
+                <Link href="/dashboard/patient/documents">Ver todos</Link>
               </Button>
             </div>
 
@@ -232,11 +230,10 @@ export default async function PatientDashboardPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-gray-500">
-                        {formatDistance(
-                          new Date(doc.created_at),
-                          new Date(),
-                          { locale: ptBR, addSuffix: true }
-                        )}
+                        {formatDistance(new Date(doc.created_at), new Date(), {
+                          locale: ptBR,
+                          addSuffix: true,
+                        })}
                       </span>
                       <ChevronRight className="w-5 h-5 text-gray-400" />
                     </div>
@@ -250,7 +247,7 @@ export default async function PatientDashboardPage() {
                   title="Nenhum documento"
                   description="Seus documentos médicos aparecerão aqui."
                   actionLabel="Ver Documentos"
-                  actionHref="/dashboard/documents"
+                  actionHref="/dashboard/patient/documents"
                 />
               </div>
             )}
